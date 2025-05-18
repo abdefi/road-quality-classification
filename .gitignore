@@ -4,3 +4,6 @@
 # ide
 .idea
 .vscode
+
+# output
+.out

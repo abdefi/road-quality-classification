@@ -1,7 +1,11 @@
 import os
+import sys
+from pathlib import Path
 
 import requests
 from dotenv import load_dotenv, find_dotenv
+
+from src.exceptions import MetadataNotFoundException
 from urlsigner import sign_url
 from exceptions import ImageNotFoundException
 
@@ -81,7 +85,7 @@ def request_street_view_image_metadata(coordinate_lat: str, coordinate_lon: str)
     if r.status_code == 200 and r.json()["status"] == "OK":
         return r.json()["pano_id"]
     else:
-        raise ImageNotFoundException(f"Error: {r.status_code} - {r.text}")
+        raise MetadataNotFoundException(f"Error: {r.status_code} - {r.text}")
 
 
 def list_contains_pano_id(data_list: list[tuple[tuple[float, float], str]], target_string: str) -> bool:
@@ -113,11 +117,48 @@ def get_coordinate_pano_ids(contained_coordinates: list[tuple[float, float]]):
             if not list_contains_pano_id(pano_ids_mapped, pano_id):
                 pano_ids_mapped.append((current_coordinates, pano_id))
 
-        except ImageNotFoundException:
-            print(f"Error requesting image for location: {current_coordinates}")
+        except MetadataNotFoundException:
+            print(f"Error requesting image for location: {current_coordinates}", file=sys.stderr)
             continue
 
+    print(f"All images requested. {len(pano_ids_mapped)} images found.")
+
     return pano_ids_mapped
+
+
+def request_street_view_image_for_id(pano_id: str, path: str = "../out/images/"):
+    """
+    Request the Street View image for a given pano_id.
+    :param path: The path where the image will be saved.
+    :param pano_id: The pano_id for the image to be requested.
+
+    :return:
+    """
+    api_key = os.getenv("GCP_API_KEY")
+    signing_secret = os.getenv("GCP_SIGNING_SECRET")
+
+    base_url = "https://maps.googleapis.com/maps/api/streetview"
+
+    api_key_param = f"key={api_key}&"
+    pano_id_param = f"pano={pano_id}&"
+    size_param = "size=1920x1080&"
+    error_code_param = "return_error_code=true&"
+
+    request_url = sign_url(
+        input_url=f"{base_url}?{pano_id_param}{size_param}{api_key_param}{error_code_param}",
+        secret=signing_secret,
+    )
+
+    r = requests.get(request_url)
+
+    if r.status_code == 200:
+        # Create the directory if it doesn't exist
+        Path(path).mkdir(parents=True, exist_ok=True)
+        filename = f"{pano_id}.jpg"
+        with open(os.path.join(path, filename), "wb") as f:
+            f.write(r.content)
+    else:
+        raise ImageNotFoundException(f"Error: {r.status_code} - {r.text}")
 
 
 def extract_images():
@@ -135,11 +176,12 @@ def extract_images():
 
     coordinate_pano_ids = get_coordinate_pano_ids(all_contained_coordinates)
 
-    print(f"All images requested. {len(coordinate_pano_ids)} images found.")
-    print("Coordinate and Pano ID pairs:")
     for coordinate, current_pano_id in coordinate_pano_ids:
         print(f"Coordinate: {coordinate}, Pano ID: {current_pano_id}")
-
+        try:
+            request_street_view_image_for_id(current_pano_id)
+        except ImageNotFoundException:
+            print(f"Error requesting image for location: {coordinate}", file=sys.stderr)
 
 if __name__ == "__main__":
     extract_images()
