@@ -1,3 +1,4 @@
+import math
 import os
 import sys
 from pathlib import Path
@@ -28,7 +29,7 @@ def parse_corners() -> tuple[tuple[str, str], tuple[str, str]]:
 def get_coordinate_list(
         north_west: tuple[str, str],
         south_east: tuple[str, str],
-        step_size_meters=10
+        step_size_meters=50,
 ) -> list[tuple[float, float]]:
     """
     Generate a list of coordinates between two points.
