@@ -5,12 +5,11 @@ from pathlib import Path
 import requests
 from dotenv import load_dotenv, find_dotenv
 
-from src.exceptions import MetadataNotFoundException
+from exceptions import ImageNotFoundException, MetadataNotFoundException
 from urlsigner import sign_url
-from exceptions import ImageNotFoundException
 
 
-def parse_corners():
+def parse_corners() -> tuple[tuple[str, str], tuple[str, str]]:
     """
     Parse the corners of the bounding box from environment variables.
     :return: Tuple of (north_west, south_east)
@@ -26,7 +25,11 @@ def parse_corners():
     return (north_west[0], north_west[1]), (south_east[0], south_east[1])
 
 
-def get_coordinate_list(north_west: tuple[str, str], south_east: tuple[str, str], step_size_meters=10):
+def get_coordinate_list(
+        north_west: tuple[str, str],
+        south_east: tuple[str, str],
+        step_size_meters=10
+) -> list[tuple[float, float]]:
     """
     Generate a list of coordinates between two points.
     :param north_west: Tuple of (latitude, longitude) for the north-west corner
@@ -61,7 +64,7 @@ def get_coordinate_list(north_west: tuple[str, str], south_east: tuple[str, str]
     return coordinates
 
 
-def request_street_view_image_metadata(coordinate_lat: str, coordinate_lon: str):
+def request_street_view_image_metadata(coordinate_lat: str, coordinate_lon: str) -> str:
     """
     Request the Street View image metadata for a given coordinate.
     :param coordinate_lat:
@@ -104,7 +107,7 @@ def list_contains_pano_id(data_list: list[tuple[tuple[float, float], str]], targ
     return False
 
 
-def get_coordinate_pano_ids(contained_coordinates: list[tuple[float, float]]):
+def get_coordinate_pano_ids(contained_coordinates: list[tuple[float, float]]) -> list[tuple[tuple[float, float], str]]:
     """
     Get the pano IDs for the coordinates in the coordinate list.
     :return: A list of tuples with coordinates and their corresponding pano IDs.
@@ -127,9 +130,10 @@ def get_coordinate_pano_ids(contained_coordinates: list[tuple[float, float]]):
     return pano_ids_mapped
 
 
-def request_street_view_image_for_id(pano_id: str, path: str = "../out/images/"):
+def request_street_view_image_for_id(pano_id: str, image_coordinates: tuple[float, float], path: str = "out/images/"):
     """
     Request the Street View image for a given pano_id.
+    :param image_coordinates: The coordinates of the image.
     :param path: The path where the image will be saved.
     :param pano_id: The pano_id for the image to be requested.
 
@@ -157,13 +161,39 @@ def request_street_view_image_for_id(pano_id: str, path: str = "../out/images/")
     r = requests.get(request_url)
 
     if r.status_code == 200:
-        # Create the directory if it doesn't exist
-        Path(path).mkdir(parents=True, exist_ok=True)
-        filename = f"{pano_id}.jpg"
-        with open(os.path.join(path, filename), "wb") as f:
-            f.write(r.content)
+        save_image_and_set_name(path, r, image_coordinates)
     else:
         raise ImageNotFoundException(f"Error: {r.status_code} - {r.text}")
+
+
+def encode_coordinates_as_filename(coordinates: tuple[float, float]) -> str:
+    """
+    Encode the coordinates as a filename.
+    :param coordinates: The coordinates to encode.
+    :return: A string with the coordinates encoded as a filename.
+    """
+    latitude = str(coordinates[0]).replace(".", "_")
+    longitude = str(coordinates[1]).replace(".", "_")
+
+    return f"{latitude}__{longitude}.jpg"
+
+
+def save_image_and_set_name(path: str, response: requests.Response, coordinates: tuple[float, float]):
+    """
+    Save the image and set the name as coordinates.
+    :param coordinates: The coordinates of the image.
+    :param path: The path where the image will be saved.
+    :param response: The api response containing the image data.
+    :return:
+    """
+    # Create the directory if it doesn't exist
+    Path(path).mkdir(parents=True, exist_ok=True)
+
+    filename = encode_coordinates_as_filename(coordinates)
+
+    file_path = os.path.join(path, filename)
+    with open(file_path, "wb") as f:
+        f.write(response.content)
 
 
 def extract_images():
@@ -184,7 +214,7 @@ def extract_images():
     for coordinate, current_pano_id in coordinate_pano_ids:
         print(f"Coordinate: {coordinate}, Pano ID: {current_pano_id}")
         try:
-            request_street_view_image_for_id(current_pano_id)
+            request_street_view_image_for_id(current_pano_id, coordinate)
         except ImageNotFoundException:
             print(f"Error requesting image for location: {coordinate}", file=sys.stderr)
 

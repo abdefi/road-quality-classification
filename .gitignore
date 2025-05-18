@@ -6,4 +6,4 @@
 .vscode
 
 # output
-.out
+/out
