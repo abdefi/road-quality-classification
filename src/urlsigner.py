@@ -21,7 +21,7 @@ def sign_url(input_url=None, secret=None):
   """
 
     if not input_url or not secret:
-        raise Exception("Both input_url and secret are required")
+        raise ValueError("Both input_url and secret are required")
 
     url = urlparse.urlparse(input_url)
 
