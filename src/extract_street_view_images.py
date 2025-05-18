@@ -133,9 +133,9 @@ def get_coordinate_pano_ids(contained_coordinates: list[tuple[float, float]]) ->
 def request_street_view_image_for_id(pano_id: str, image_coordinates: tuple[float, float], path: str = "out/images/"):
     """
     Request the Street View image for a given pano_id.
+    :param pano_id: The pano_id for the image to be requested.
     :param image_coordinates: The coordinates of the image.
     :param path: The path where the image will be saved.
-    :param pano_id: The pano_id for the image to be requested.
 
     :return:
     """
