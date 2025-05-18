@@ -3,11 +3,7 @@ import os
 import requests
 from dotenv import load_dotenv, find_dotenv
 from urlsigner import sign_url
-
-
-def init():
-    load_dotenv(find_dotenv())
-
+from exceptions import ImageNotFoundException
 
 def parse_corners():
     """
@@ -60,7 +56,7 @@ def get_coordinate_list(north_west: tuple[str, str], south_east: tuple[str, str]
     return coordinates
 
 
-def request_street_view_image(coordinate_lat: str, coordinate_lon: str):
+def request_street_view_image_metadata(coordinate_lat: str, coordinate_lon: str):
     api_key = os.getenv("GCP_API_KEY")
     signing_secret = os.getenv("GCP_SIGNING_SECRET")
 
@@ -75,11 +71,48 @@ def request_street_view_image(coordinate_lat: str, coordinate_lon: str):
     )
 
     r = requests.get(request_url)
-    print(r.text)
 
+    if r.status_code == 200 and r.json()["status"] == "OK":
+        return r.json()["pano_id"]
+    else:
+        raise ImageNotFoundException(f"Error: {r.status_code} - {r.text}")
+
+
+def list_contains_pano_id(data_list: list[tuple[tuple[float, float], str]], target_string: str) -> bool:
+    """
+    Checks if the target_string is the second item in any of the main tuples in the list.
+
+    Args:
+        data_list: A list of tuples, where each tuple is ((float, float), str).
+        target_string: The string to search for.
+
+    Returns:
+        True if the string is found, False otherwise.
+    """
+    for item_tuple in data_list:
+        if item_tuple[1] == target_string:
+            return True
+    return False
+
+
+def get_coordinate_pano_ids():
+    pano_ids_mapped: list[tuple[tuple[float, float], str]] = []
+    for current_coordinates in coordinate_list:
+        print(f"Requesting image for location: {current_coordinates}...")
+        try:
+            pano_id = request_street_view_image_metadata(str(current_coordinates[0]), str(current_coordinates[1]))
+
+            if not list_contains_pano_id(pano_ids_mapped, pano_id):
+                pano_ids_mapped.append((current_coordinates, pano_id))
+
+        except ImageNotFoundException:
+            print(f"Error requesting image for location: {current_coordinates}")
+            continue
+
+    return pano_ids_mapped
 
 if __name__ == "__main__":
-    init()
+    load_dotenv(find_dotenv())
     input_coordinates = parse_corners()
 
     coordinate_list = get_coordinate_list(
@@ -87,6 +120,10 @@ if __name__ == "__main__":
         input_coordinates[1],
     )
 
-    for coordinate in coordinate_list:
-        print(f"Requesting image for location: {coordinate}...")
-        request_street_view_image(str(coordinate[0]), str(coordinate[1]))
+    coordinate_pano_ids = get_coordinate_pano_ids()
+
+    print(f"All images requested. {len(coordinate_pano_ids)} images found.")
+    print("Coordinate and Pano ID pairs:")
+    for coordinate, current_pano_id in coordinate_pano_ids:
+        print(f"Coordinate: {coordinate}, Pano ID: {current_pano_id}")
+
