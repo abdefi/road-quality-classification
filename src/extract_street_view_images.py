@@ -39,7 +39,7 @@ def get_coordinate_list(
     """
     # Convert step size from meters to degrees (approximate)
     lat_step = step_size_meters / 111320  # 1 degree latitude is approximately 111.32 km
-    lon_step = step_size_meters / (111320 * abs(float(north_west[0]) - float(south_east[0])))
+    lon_step = step_size_meters / (111320 * math.cos(math.radians(float(north_west[0]))))
 
     lat_start = float(north_west[0])
     lon_start = float(north_west[1])
