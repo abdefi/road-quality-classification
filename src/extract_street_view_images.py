@@ -9,6 +9,7 @@ from src.exceptions import MetadataNotFoundException
 from urlsigner import sign_url
 from exceptions import ImageNotFoundException
 
+
 def parse_corners():
     """
     Parse the corners of the bounding box from environment variables.
@@ -141,11 +142,15 @@ def request_street_view_image_for_id(pano_id: str, path: str = "../out/images/")
 
     api_key_param = f"key={api_key}&"
     pano_id_param = f"pano={pano_id}&"
-    size_param = "size=1920x1080&"
+    # 640 x 640 is the maximum size for Street View images on the free tier
+    size_param = "size=640x640&"
+    pitch_param = "pitch=-90&"
+    fov_param = "fov=100&"
+    source_param = "source=outdoor&"
     error_code_param = "return_error_code=true&"
 
     request_url = sign_url(
-        input_url=f"{base_url}?{pano_id_param}{size_param}{api_key_param}{error_code_param}",
+        input_url=f"{base_url}?{pano_id_param}{size_param}{pitch_param}{fov_param}{source_param}{api_key_param}{error_code_param}",
         secret=signing_secret,
     )
 
@@ -182,6 +187,7 @@ def extract_images():
             request_street_view_image_for_id(current_pano_id)
         except ImageNotFoundException:
             print(f"Error requesting image for location: {coordinate}", file=sys.stderr)
+
 
 if __name__ == "__main__":
     extract_images()
