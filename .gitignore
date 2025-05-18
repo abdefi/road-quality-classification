@@ -1,0 +1,9 @@
+# env
+.env
+
+# ide
+.idea
+.vscode
+
+# output
+/out
