@@ -57,6 +57,12 @@ def get_coordinate_list(north_west: tuple[str, str], south_east: tuple[str, str]
 
 
 def request_street_view_image_metadata(coordinate_lat: str, coordinate_lon: str):
+    """
+    Request the Street View image metadata for a given coordinate.
+    :param coordinate_lat:
+    :param coordinate_lon:
+    :return: The pano_id for the given coordinates.
+    """
     api_key = os.getenv("GCP_API_KEY")
     signing_secret = os.getenv("GCP_SIGNING_SECRET")
 
@@ -82,12 +88,10 @@ def list_contains_pano_id(data_list: list[tuple[tuple[float, float], str]], targ
     """
     Checks if the target_string is the second item in any of the main tuples in the list.
 
-    Args:
-        data_list: A list of tuples, where each tuple is ((float, float), str).
-        target_string: The string to search for.
+    :param data_list: A list of tuples, where each tuple is ((float, float), str).
+    :param target_string: The string to search for.
 
-    Returns:
-        True if the string is found, False otherwise.
+    :return: True if the string is found, False otherwise.
     """
     for item_tuple in data_list:
         if item_tuple[1] == target_string:
@@ -95,9 +99,13 @@ def list_contains_pano_id(data_list: list[tuple[tuple[float, float], str]], targ
     return False
 
 
-def get_coordinate_pano_ids():
+def get_coordinate_pano_ids(contained_coordinates: list[tuple[float, float]]):
+    """
+    Get the pano IDs for the coordinates in the coordinate list.
+    :return: A list of tuples with coordinates and their corresponding pano IDs.
+    """
     pano_ids_mapped: list[tuple[tuple[float, float], str]] = []
-    for current_coordinates in coordinate_list:
+    for current_coordinates in contained_coordinates:
         print(f"Requesting image for location: {current_coordinates}...")
         try:
             pano_id = request_street_view_image_metadata(str(current_coordinates[0]), str(current_coordinates[1]))
@@ -111,19 +119,27 @@ def get_coordinate_pano_ids():
 
     return pano_ids_mapped
 
-if __name__ == "__main__":
+
+def extract_images():
+    """
+    Main function to extract images from Google Street View.
+    :return:
+    """
     load_dotenv(find_dotenv())
     input_coordinates = parse_corners()
 
-    coordinate_list = get_coordinate_list(
+    all_contained_coordinates = get_coordinate_list(
         input_coordinates[0],
         input_coordinates[1],
     )
 
-    coordinate_pano_ids = get_coordinate_pano_ids()
+    coordinate_pano_ids = get_coordinate_pano_ids(all_contained_coordinates)
 
     print(f"All images requested. {len(coordinate_pano_ids)} images found.")
     print("Coordinate and Pano ID pairs:")
     for coordinate, current_pano_id in coordinate_pano_ids:
         print(f"Coordinate: {coordinate}, Pano ID: {current_pano_id}")
 
+
+if __name__ == "__main__":
+    extract_images()
