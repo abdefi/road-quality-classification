@@ -1,2 +1,4 @@
-requests~=2.32.3
-python-dotenv~=1.1.0
+requests~=2.31.0
+python-dotenv~=0.21.1
+numpy~=1.21.6
+scikit-image~=0.19.3
