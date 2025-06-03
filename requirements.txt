@@ -1,2 +1,4 @@
 requests~=2.32.3
 python-dotenv~=1.1.0
+tensorflow~=2.16.2
+keras~=3.10.0
