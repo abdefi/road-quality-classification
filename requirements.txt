@@ -1,4 +1,6 @@
 requests~=2.31.0
 python-dotenv~=0.21.1
-numpy~=1.21.6
-scikit-image~=0.19.3
+numpy~=1.26.4
+scikit-image~=0.25.2
+clustimage~=1.6.22
+streamlit~=1.45.1
