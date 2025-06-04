@@ -49,7 +49,6 @@ st.sidebar.info(
     "**Note:** Adjusting these sliders will re-run the analysis and update the results below."
 )
 
-@st.cache_data # Cache results to avoid re-reading images if inputs don't change
 def process_images(
         input_fldr, good_imgs_fldr, non_street_prev_fldr,
         sat_thresh, v_min, v_max, max_bright_px_thresh, c_size
@@ -146,7 +145,7 @@ if filtered_images_data:
     for i, img_data in enumerate(filtered_images_data):
         col = cols[i % 5]
         with col:
-            st.image(os.path.join(non_street_preview_folder, img_data["filename"]), caption=img_data["filename"], use_container_width=True)
+            st.image(os.path.join(non_street_preview_folder, img_data["filename"]), caption=img_data["filename"], use_column_width=True)
             st.caption(f"Reason: {img_data['reason']}")
 
 else:
