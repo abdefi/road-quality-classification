@@ -6,15 +6,6 @@ import streamlit as st
 from skimage import color, io
 from skimage.util import img_as_float, img_as_ubyte
 
-def create_folder(folder: str) -> None:
-    """
-    Create a folder if it does not exist.
-
-    :param folder: Path to the folder.
-    :return:
-    """
-    os.makedirs(folder, exist_ok=True)
-
 def clear_folder(folder: str) -> None:
     """
     Delete and recreate a folder.
@@ -143,8 +134,8 @@ def main() -> None:
     input_folder = "./images/all_images"
     good_images_folder = "./images/good_images"
     non_street_preview_folder = "./images/temp_non_street_images"
-    create_folder(good_images_folder)
-    create_folder(non_street_preview_folder)
+    os.makedirs(good_images_folder, exist_ok=True)
+    os.makedirs(non_street_preview_folder, exist_ok=True)
 
     st.set_page_config(layout="wide", page_title="Image Filter Tuner")
     st.title("Image Filter Parameter Tuner")
