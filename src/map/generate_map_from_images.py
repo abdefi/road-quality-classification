@@ -13,7 +13,8 @@ CATEGORY_COLOR_MAP = {
     6: '#FF0000',  # Worst
 }
 
-def add_markers(category, categorized_coordinates):
+
+def add_markers(category: int, categorized_coordinates: dict[int, list[tuple[float, float]]]):
     """
     Adds markers to the map for a given category of images.
 
@@ -31,7 +32,7 @@ def add_markers(category, categorized_coordinates):
             lng = float(lng.replace('_', '.'))
 
             # Images are categorized from 0 to 5, so we add 1 to the category index
-            categorized_coordinates[category+1].append((lat, lng))
+            categorized_coordinates[category + 1].append((lat, lng))
 
 
 def plot_map_from_images():
@@ -67,9 +68,11 @@ def plot_map_from_images():
     # Draw the map to an HTML file:
     gmap.draw('map.html')
 
+
 def main():
     load_dotenv(find_dotenv())
     plot_map_from_images()
+
 
 if __name__ == "__main__":
     main()
