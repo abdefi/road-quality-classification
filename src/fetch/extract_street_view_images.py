@@ -32,40 +32,43 @@ def get_coordinate_list(
         step_size_meters=50,
 ) -> list[tuple[float, float]]:
     """
-    Generate a list of coordinates between two points.
-    :param north_west: Tuple of (latitude, longitude) for the north-west corner
-    :param south_east: Tuple of (latitude, longitude) for the south-east corner
-    :param step_size_meters: Step size in meters
-    :return: List of tuples with coordinates
-    """
-    # Convert step size from meters to degrees (approximate)
-    lat_step = step_size_meters / 111320  # 1 degree latitude is approximately 111.32 km
-    lon_step = step_size_meters / (111320 * math.cos(math.radians(float(north_west[0]))))
+    Generates a list of coordinates in a grid from north-west to south-east corners.
 
+    :param north_west: Tuple of (latitude, longitude) for the north-west corner.
+    :param south_east: Tuple of (latitude, longitude) for the south-east corner.
+    :param step_size_meters: The approximate step size in meters for the grid.
+    :return: A list of (latitude, longitude) tuples.
+    """
     lat_start = float(north_west[0])
     lon_start = float(north_west[1])
     lat_end = float(south_east[0])
     lon_end = float(south_east[1])
 
-    difference_lat = lat_start - lat_end
-    difference_lon = lon_start - lon_end
-
-    # Calculate the number of steps needed
-    steps_lat = int(abs(difference_lat) / lat_step)
-    steps_lon = int(abs(difference_lon) / lon_step)
-
     # Generate the coordinates
     coordinates = []
-    for i in range(steps_lat + 1):
-        for j in range(steps_lon + 1):
-            lat = lat_start - (i * lat_step)
-            lon = lon_start - (j * lon_step)
-            coordinates.append((lat, lon))
+
+    # Constant: 1 degree of latitude is ~111.32 km
+    lat_step = step_size_meters / 111320.0
+
+    current_lat = lat_start
+
+    # Iterate from north to south
+    while current_lat >= lat_end:
+        # Recalculate longitude step for the current latitude to be accurate
+        lon_step = step_size_meters / (111320.0 * math.cos(math.radians(current_lat)))
+
+        current_lon = lon_start
+        # Iterate from west to east
+        while current_lon <= lon_end:
+            coordinates.append((current_lat, current_lon))
+            current_lon += lon_step
+
+        current_lat -= lat_step
 
     return coordinates
 
 
-def request_street_view_image_metadata(coordinate_lat: str, coordinate_lon: str) -> str:
+def request_street_view_image_metadata(coordinate_lat: str, coordinate_lon: str) -> dict[str, str]:
     """
     Request the Street View image metadata for a given coordinate.
     :param coordinate_lat:
@@ -88,7 +91,8 @@ def request_street_view_image_metadata(coordinate_lat: str, coordinate_lon: str)
     r = requests.get(request_url)
 
     if r.status_code == 200 and r.json()["status"] == "OK":
-        return r.json()["pano_id"]
+        json_data = r.json()
+        return {"pano_id": json_data["pano_id"], "lat": json_data["location"]["lat"], "lon": json_data["location"]["lng"]}
     else:
         raise MetadataNotFoundException(f"Error: {r.status_code} - {r.text}")
 
@@ -117,10 +121,12 @@ def get_coordinate_pano_ids(contained_coordinates: list[tuple[float, float]]) ->
     for current_coordinates in contained_coordinates:
         print(f"Requesting image for location: {current_coordinates}...")
         try:
-            pano_id = request_street_view_image_metadata(str(current_coordinates[0]), str(current_coordinates[1]))
+            image_metadata = request_street_view_image_metadata(str(current_coordinates[0]), str(current_coordinates[1]))
+            pano_id = image_metadata.get("pano_id")
+            coordinates = (float(image_metadata.get("lat")), float(image_metadata.get("lon")))
 
             if not list_contains_pano_id(pano_ids_mapped, pano_id):
-                pano_ids_mapped.append((current_coordinates, pano_id))
+                pano_ids_mapped.append((coordinates, pano_id))
 
         except MetadataNotFoundException:
             print(f"Error requesting image for location: {current_coordinates}", file=sys.stderr)
