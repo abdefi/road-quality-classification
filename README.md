@@ -23,8 +23,8 @@ The process is divided into three main stages, followed by visualization:
 
 ## Getting Started
 
-**`.env` file for API keys**:
-Create a `.env` file in the root of your project directory and add the following:
+**`.env` file for API keys**: Create a `.env` file in the root of your project directory and add the following:
+
 ```bash
 GCP_API_KEY="YOUR_GOOGLE_CLOUD_API_KEY"
 GCP_SIGNING_SECRET="YOUR_GOOGLE_CLOUD_SIGNING_SECRET"
@@ -35,6 +35,7 @@ SOUTH_EAST="LATITUDE_SE,LONGITUDE_SE"
 
 Replace placeholders with your actual Google Cloud credentials and desired geographical bounding box coordinates.
 The `NORTH_WEST` and `SOUTH_EAST` variables define the bounding box for the area from which you want to extract street view images.
+
 ---
 
 ## Usage Guide
