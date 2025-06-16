@@ -23,7 +23,9 @@ The process is divided into three main stages, followed by visualization:
 
 ## Getting Started
 
-**`.env` file for API keys**: Create a `.env` file in the root of your project directory and add the following:
+### Configuration
+
+Create a `.env` file in the root of your project directory and add the following:
 
 ```bash
 GCP_API_KEY="YOUR_GOOGLE_CLOUD_API_KEY"
@@ -35,6 +37,13 @@ SOUTH_EAST="LATITUDE_SE,LONGITUDE_SE"
 
 Replace placeholders with your actual Google Cloud credentials and desired geographical bounding box coordinates.
 The `NORTH_WEST` and `SOUTH_EAST` variables define the bounding box for the area from which you want to extract street view images.
+
+### [Optional] Download Dataset
+
+If you want to use our pre-existing dataset for training and evaluation, you can download it from [here.](https://drive.google.com/file/d/1x3EScOoQ9fMtsAY1nGyI0p9BcaqriR1J/view?usp=sharing)
+
+This dataset is based on the work of [lenoch0d.](https://github.com/lenoch0d/road-quality-classification)
+
 
 ---
 
