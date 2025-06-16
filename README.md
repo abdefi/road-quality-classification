@@ -23,18 +23,15 @@ The process is divided into three main stages, followed by visualization:
 
 ## Getting Started
 
-Follow these steps to set up and run the entire pipeline.
-
-### Configuration
-
 **`.env` file for API keys**:
 Create a `.env` file in the root of your project directory and add the following:
+```bash
+GCP_API_KEY="YOUR_GOOGLE_CLOUD_API_KEY"
+GCP_SIGNING_SECRET="YOUR_GOOGLE_CLOUD_SIGNING_SECRET"
 
-    GCP_API_KEY="YOUR_GOOGLE_CLOUD_API_KEY"
-    GCP_SIGNING_SECRET="YOUR_GOOGLE_CLOUD_SIGNING_SECRET"
-    
-    NORTH_WEST="LATITUDE_NW,LONGITUDE_NW"
-    SOUTH_EAST="LATITUDE_SE,LONGITUDE_SE"
+NORTH_WEST="LATITUDE_NW,LONGITUDE_NW"
+SOUTH_EAST="LATITUDE_SE,LONGITUDE_SE"
+```
 
 Replace placeholders with your actual Google Cloud credentials and desired geographical bounding box coordinates.
 The `NORTH_WEST` and `SOUTH_EAST` variables define the bounding box for the area from which you want to extract street view images.
@@ -56,15 +53,13 @@ python ./src/fetch/extract_street_view_images.py
 
 ### 2. Run Image Categorization (Streamlit App)
 
-Before running the Streamlit app, you need to copy the extracted images to the application's image directory.
-
 ```bash
-cp -r out/images/* src/filter/images/all_images/
+
 streamlit run ./src/filter/filter_unwanted_images_saturation.py
 ```
 
 * Open your browser to the URL displayed in your terminal.
-* **Action:** Adjust parameters within the Streamlit app to review and filter images based on saturation.
+* **Action:** Adjust parameters within the Streamlit app to review and filter images.
 * **Output:** The "good" (filtered) images will be saved in `images/good_images/`.
 
 ### 3. Train Road Quality Classifier
