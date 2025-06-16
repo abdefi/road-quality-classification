@@ -4,3 +4,5 @@ numpy~=1.26.4
 scikit-image~=0.25.2
 clustimage~=1.6.22
 streamlit~=1.45.1
+fastai
+torch

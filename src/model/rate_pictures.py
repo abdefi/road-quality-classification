@@ -1,6 +1,3 @@
-import shutil
-from pathlib import Path
-from fastai.learner import load_learner
 from fastai.vision.all import *
 import torch
 from torch.nn.functional import softmax
@@ -8,12 +5,12 @@ from PIL import Image
 from train_model import BalancedLabelDistanceLoss, BalancedHybridLoss
 
 # === Load the model ===
-learn_inf = load_learner('C:/Users/Eric/PycharmProjects/PythonProject1/dataset/road_quality_classifier_727_3616_custom.pkl')
+learn_inf = load_learner('road_quality_classifier_727_3616_custom.pkl')
 print("Vocab:", learn_inf.dls.vocab)
 
 # === Set paths ===
-source_folder = Path("C:/Users/Eric/Documents/projects/road-quality-classification/images/good_images")
-destination_base = Path("C:/Users/Eric/Documents/projects/road-quality-classification/images/sorted_output")
+source_folder = Path("../../images/good_images")
+destination_base = Path("../../images/sorted_by_class")
 destination_base.mkdir(exist_ok=True, parents=True)
 
 # === Allowed image extensions ===
