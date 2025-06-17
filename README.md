@@ -1,6 +1,6 @@
 # road-quality-classification
 
-This repository offers a complete pipeline to **automatically assess road quality using Google Street View images**. From fetching the images to advanced deep learning classification, we've got it covered.
+This repository offers a complete pipeline to **automatically assess road quality using Google Street View images**. From fetching the images to advanced deep learning classification.
 
 ## Key Features
 
@@ -76,7 +76,7 @@ streamlit run ./src/filter/filter_unwanted_images_saturation.py
 
 This step trains a ResNet50 model using a pre-existing dataset.
 
-* **Dataset:** This project utilizes the dataset from the [road-quality-classification](https://github.com/lenoch0d/road-quality-classification) repository.
+* **Dataset:** This project utilizes an extended dataset from the [road-quality-classification](https://github.com/lenoch0d/road-quality-classification) repository.
 * **Setup:** Add the dataset to your project and ensure the path is correctly configured in the `src/model/train_model.py` script.
 
 ```bash
