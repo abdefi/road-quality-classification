@@ -131,15 +131,9 @@ def main() -> None:
 
     :return:
     """
-<<<<<<< feature/#5-create-readme
-    input_folder = "../out/images"
-    good_images_folder = "./images/good_images"
-    non_street_preview_folder = "./images/temp_non_street_images"
-=======
     input_folder = "images/all_images"
     good_images_folder = "images/good_images"
     non_street_preview_folder = "images/temp_non_street_images"
->>>>>>> main
     os.makedirs(good_images_folder, exist_ok=True)
     os.makedirs(non_street_preview_folder, exist_ok=True)
 
