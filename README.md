@@ -59,43 +59,40 @@ This step downloads street view images to a specified output directory.
 python ./src/fetch/extract_street_view_images.py
 ```
 
-* **Output:** Images will be saved in the `out/images/` directory.
+Images will be saved in the `images/all_images` directory.
 
-### 2. Run Image Categorization (Streamlit App)
+### 2. Run Image Preselection
 
 ```bash
 
 streamlit run ./src/filter/filter_unwanted_images_saturation.py
 ```
 
-* Open your browser to the URL displayed in your terminal.
-* **Action:** Adjust parameters within the Streamlit app to review and filter images.
-* **Output:** The "good" (filtered) images will be saved in `images/good_images/`.
+Open your browser to the URL displayed in your terminal.
+Adjust parameters within the Streamlit app to review and filter images.
+The "good" (filtered) images will be saved in `images/good_images/`.
 
 ### 3. Train Road Quality Classifier
 
 This step trains a ResNet50 model using a pre-existing dataset.
 
-* **Dataset:** This project utilizes an extended dataset from the [road-quality-classification](https://github.com/lenoch0d/road-quality-classification) repository.
-* **Setup:** Add the dataset to your project and ensure the path is correctly configured in the `src/model/train_model.py` script.
+ This project utilizes an extended dataset from the [road-quality-classification](https://github.com/lenoch0d/road-quality-classification) repository.
+You will have to rework the structure of the dataset. Add a `dataset` folder to `images`. Put the trainings and validation datasets into this directoriy. Rename them to `train` and `val`. Also the class directories in the dataset should be renamed from 0 to 5 instead of 1 to 6.
 
 ```bash
 python train_classifier.py
 ```
 
-* **Output:**
-    * The best-performing model will be saved as `road_quality_classifier.pkl`.
-    * Training progress will be logged in `training_log.csv`.
+The best-performing model will be saved as `road_quality_classifier.pkl`.
+Training progress will be logged in `training_log.csv`.
 
 ### 4. Run Road Quality Classification
 
-Before running the classification, verify that the image folder paths in the `src/model/rate_pictures.py` script are set to match your local setup.
-
+If you have set up the project structure according to this README you only have to change the path to the model you want to use.
 ```bash
 python src/model/rate_pictures.py
 ```
-
-* **Output:** Images will be categorized and saved into subfolders (0 to 5) within the output directory, corresponding to their predicted road quality class.
+Images will be categorized and saved into subfolders (0 to 5) within the `images/sorted_by_class` directory, corresponding to their predicted road quality class.
 
 ### 5. Generate Map Visualization
 
@@ -105,5 +102,8 @@ After classifying the images, run this script to create an interactive HTML map.
 python src/map/generate_map_from_images.py
 ```
 
-* **Action:** Open the generated `map.html` file in your web browser.
-* **Output:** An interactive HTML map visualizing the classified road quality data.
+Open the generated `map.html` file in your web browser.
+An interactive HTML map visualizing the classified road quality data.
+
+## Example Results
+![map](images/readme/map.png)
