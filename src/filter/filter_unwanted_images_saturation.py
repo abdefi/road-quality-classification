@@ -131,9 +131,9 @@ def main() -> None:
 
     :return:
     """
-    input_folder = "./images/all_images"
-    good_images_folder = "./images/good_images"
-    non_street_preview_folder = "./images/temp_non_street_images"
+    input_folder = "images/all_images"
+    good_images_folder = "images/good_images"
+    non_street_preview_folder = "images/temp_non_street_images"
     os.makedirs(good_images_folder, exist_ok=True)
     os.makedirs(non_street_preview_folder, exist_ok=True)
 
@@ -181,7 +181,7 @@ def main() -> None:
         for i, img_data in enumerate(filtered_images_data):
             col = cols[i % 5]
             with col:
-                st.image(os.path.join(non_street_preview_folder, img_data["filename"]), caption=img_data["filename"], use_column_width=True)
+                st.image(os.path.join(non_street_preview_folder, img_data["filename"]), caption=img_data["filename"], use_container_width=True)
                 st.caption(f"Reason: {img_data['reason']}")
     else:
         st.info("No images found matching the current 'non-street' criteria. All images are considered 'good' with the current parameters.")

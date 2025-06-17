@@ -137,7 +137,7 @@ def get_coordinate_pano_ids(contained_coordinates: list[tuple[float, float]]) ->
     return pano_ids_mapped
 
 
-def request_street_view_image_for_id(pano_id: str, image_coordinates: tuple[float, float], path: str = "out/images/"):
+def request_street_view_image_for_id(pano_id: str, image_coordinates: tuple[float, float], path: str = "images/all_images"):
     """
     Request the Street View image for a given pano_id.
     :param pano_id: The pano_id for the image to be requested.
@@ -209,6 +209,7 @@ def extract_images():
     :return:
     """
     load_dotenv(find_dotenv())
+    os.chdir("../..")
     input_coordinates = parse_corners()
 
     all_contained_coordinates = get_coordinate_list(
