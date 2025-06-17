@@ -1,9 +1,13 @@
 requests~=2.32.4
-python-dotenv~=0.21.1
+python-dotenv~=1.1.0
 numpy~=1.26.4
-scikit-image~=0.25.2
+scikit-image~=0.19.3
 clustimage~=1.6.22
 streamlit~=1.45.1
-fastai~=2.8.2
-torch~=2.7.1
+fastai~=2.7.19
+torch~=2.6.0
 gmplot~=1.4.1
+pathlib~=1.0.1
+scikit-learn~=1.6.1
+pillow~=11.2.1
+matplotlib~=3.9.4
