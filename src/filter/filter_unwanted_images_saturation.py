@@ -131,7 +131,7 @@ def main() -> None:
 
     :return:
     """
-    input_folder = "./images/all_images"
+    input_folder = "../../out/images"
     good_images_folder = "./images/good_images"
     non_street_preview_folder = "./images/temp_non_street_images"
     os.makedirs(good_images_folder, exist_ok=True)
